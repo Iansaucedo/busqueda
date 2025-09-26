@@ -14,7 +14,8 @@ public class HeuristicoGPFManhattan extends Heuristico<EstadoGPF> {
 
 	/**
 	 * Constructor
-	 * @param prob, un objeto ProblemaGPF 
+	 * 
+	 * @param prob, un objeto ProblemaGPF
 	 */
 	public HeuristicoGPFManhattan(ProblemaGPF prob) {
 		setMeta(prob.getMeta());
@@ -26,16 +27,17 @@ public class HeuristicoGPFManhattan extends Heuristico<EstadoGPF> {
 	public void setMeta(EstadoGPF m) {
 		meta = m;
 	}
-	
+
 	/**
 	 * Heuristico Manhattan
+	 * 
 	 * @param un Estado e (del problema de grid pathfinding)
 	 * @return el valor h(e), que es la distancia Manhattan al objetivo
-	 */	
+	 */
 	@Override
-	public double calculaH(EstadoGPF e){
+	public double calculaH(EstadoGPF e) {
 		// TODO hay que completar este metodo para que devuelva el valor de h(e)
 		return 0.0;
-		}
+	}
 
 }
