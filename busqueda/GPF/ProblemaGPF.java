@@ -187,7 +187,22 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 		// hay que ver cual es la lista de acciones aplicables en el estado actual
 		// SUGERENCIA: puede resultar interesante utilizar el metodo aplicable()
 		List<AccionGPF> lista = new LinkedList<AccionGPF>();
-		// TODO Hay que completarlo
+
+		// Probar todas las direcciones posibles
+		AccionGPF[] todasLasAcciones = {
+				new AccionGPF(AccionGPF.Direccion.ARRIBA),
+				new AccionGPF(AccionGPF.Direccion.ABAJO),
+				new AccionGPF(AccionGPF.Direccion.IZQUIERDA),
+				new AccionGPF(AccionGPF.Direccion.DERECHA)
+		};
+
+		// Solo agregar las acciones que son aplicables
+		for (AccionGPF accion : todasLasAcciones) {
+			if (aplicable(eactual, accion)) {
+				lista.add(accion);
+			}
+		}
+
 		return lista;
 	}
 
@@ -198,9 +213,18 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 	 */
 	@Override
 	public boolean aplicable(EstadoGPF e, AccionGPF a) {
-		boolean aplicable = true; // por defecto, entendemos que se puede aplicar
-		// TODO Hay que completarlo
-		return aplicable;
+		// Calcular la nueva posición después de aplicar la acción
+		int nuevaX = e.getX() + a.getDeltaX();
+		int nuevaY = e.getY() + a.getDeltaY();
+
+		// Verificar que la nueva posición esté dentro de los límites del grid
+		if (nuevaX < 0 || nuevaX >= getGridNFilas() || nuevaY < 0 || nuevaY >= getGridNCols()) {
+			return false;
+		}
+
+		// Verificar que la casilla destino no sea un obstáculo (grid[x][y] > 0
+		// significa libre)
+		return grid[nuevaX][nuevaY] > 0;
 	}
 
 	/*
@@ -211,8 +235,16 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 	@Override
 	public EstadoGPF resul(EstadoGPF e, AccionGPF a) {
 		// Hay que calcular el resultado de aplicar una accion a un estado
-		// TODO Hay que completarlo
-		return null; // si la accion no es aplicable (no deberia llegar aqui nunca)
+		if (!aplicable(e, a)) {
+			return null; // si la accion no es aplicable (no deberia llegar aqui nunca)
+		}
+
+		// Calcular la nueva posición
+		int nuevaX = e.getX() + a.getDeltaX();
+		int nuevaY = e.getY() + a.getDeltaY();
+
+		// Crear y retornar el nuevo estado
+		return new EstadoGPF(nuevaX, nuevaY);
 	}
 
 	/*
@@ -232,8 +264,9 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 	 */
 	@Override
 	public double coste(EstadoGPF e1, AccionGPF a, EstadoGPF e2) {
-		return 0; // TODO Hay que completarlo. �OJO! en GPF, solo depende de la casilla a la que
-							// se llega
+		// En GPF, el coste solo depende de la casilla a la que se llega (e2)
+		// El valor en grid[x][y] representa el coste de estar en esa casilla
+		return grid[e2.getX()][e2.getY()];
 	}
 
 	// METODOS PRIVADOS (LOS QUE HACEN "EL TRABAJO SUCIO")
@@ -309,9 +342,26 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 		System.out.println("FIN");
 		System.out.println(this.getMeta().toString());
 		System.out.println("CUADRICULA");
+		
+		// Print column headers
+		System.out.print("   |");
+		for (int j = 0; j < getGridNCols(); j++) {
+			System.out.printf("%2d ", j);
+		}
+		System.out.println();
+		
+		// Print separator line
+		System.out.print("---+");
+		for (int j = 0; j < getGridNCols(); j++) {
+			System.out.print("---");
+		}
+		System.out.println();
+		
+		// Print grid with row numbers
 		for (int i = 0; i < getGridNFilas(); i++) {
+			System.out.printf("%2d |", i); // Print row number with separator
 			for (int j = 0; j < getGridNCols(); j++)
-				System.out.print(grid[i][j] + " ");
+				System.out.printf("%2d ", grid[i][j]);
 			System.out.println();
 		}
 	}

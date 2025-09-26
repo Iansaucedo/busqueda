@@ -10,17 +10,79 @@ package busqueda.GPF;
  */
 public class AccionGPF {
 
-	// TODO Hay que completar esta clase para que represente las posibles acciones
-	// aplicables en un estado del problema GPF
+	// Enum para representar las posibles acciones
+	public enum Direccion {
+		ARRIBA, ABAJO, IZQUIERDA, DERECHA
+	}
 
-	// �IMPORTANTE! Tiene que implementar el m�todo toString() para poder imprimir
-	// la solucion
-	// (es decir, la secuencia de acciones para llegar desde el estado inicial a la
-	// meta)
+	private final Direccion direccion;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param direccion La dirección de la acción
+	 */
+	public AccionGPF(Direccion direccion) {
+		this.direccion = direccion;
+	}
+
+	/**
+	 * Obtiene la dirección de la acción
+	 * 
+	 * @return La dirección
+	 */
+	public Direccion getDireccion() {
+		return direccion;
+	}
+
+	/**
+	 * Obtiene el cambio en X para esta acción
+	 * 
+	 * @return El cambio en la coordenada X
+	 */
+	public int getDeltaX() {
+		return switch (direccion) {
+			case ARRIBA -> -1;
+			case ABAJO -> 1;
+			case IZQUIERDA, DERECHA -> 0;
+		};
+	}
+
+	/**
+	 * Obtiene el cambio en Y para esta acción
+	 * 
+	 * @return El cambio en la coordenada Y
+	 */
+	public int getDeltaY() {
+		return switch (direccion) {
+			case ARRIBA, ABAJO -> 0;
+			case IZQUIERDA -> -1;
+			case DERECHA -> 1;
+		};
+	}
 
 	@Override
 	public String toString() {
-		String sa = ""; // TODO cambiarlo
-		return sa;
+		return switch (direccion) {
+			case ARRIBA -> "Arriba";
+			case ABAJO -> "Abajo";
+			case IZQUIERDA -> "Izquierda";
+			case DERECHA -> "Derecha";
+		};
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		AccionGPF that = (AccionGPF) obj;
+		return direccion == that.direccion;
+	}
+
+	@Override
+	public int hashCode() {
+		return direccion != null ? direccion.hashCode() : 0;
 	}
 }
