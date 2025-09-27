@@ -36,8 +36,11 @@ public class HeuristicoGPFManhattan extends Heuristico<EstadoGPF> {
 	 */
 	@Override
 	public double calculaH(EstadoGPF e) {
-		// TODO hay que completar este metodo para que devuelva el valor de h(e)
-		return 0.0;
+		// Calcular la distancia Manhattan entre el estado actual y el estado meta
+		// Distancia Manhattan = |x1 - x2| + |y1 - y2|
+		int deltaX = Math.abs(e.getX() - meta.getX());
+		int deltaY = Math.abs(e.getY() - meta.getY());
+		return deltaX + deltaY;
 	}
 
 }

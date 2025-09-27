@@ -342,21 +342,21 @@ public class ProblemaGPF extends Problema<EstadoGPF, AccionGPF> {
 		System.out.println("FIN");
 		System.out.println(this.getMeta().toString());
 		System.out.println("CUADRICULA");
-		
+
 		// Print column headers
 		System.out.print("   |");
 		for (int j = 0; j < getGridNCols(); j++) {
 			System.out.printf("%2d ", j);
 		}
 		System.out.println();
-		
+
 		// Print separator line
 		System.out.print("---+");
 		for (int j = 0; j < getGridNCols(); j++) {
 			System.out.print("---");
 		}
 		System.out.println();
-		
+
 		// Print grid with row numbers
 		for (int i = 0; i < getGridNFilas(); i++) {
 			System.out.printf("%2d |", i); // Print row number with separator
