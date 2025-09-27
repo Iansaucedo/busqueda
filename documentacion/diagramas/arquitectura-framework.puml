@@ -1,0 +1,201 @@
+@startuml arquitectura-framework
+
+!define TITLE Arquitectura del Framework de Búsqueda
+
+title TITLE
+
+package "Capa de Presentación" {
+    class Tester {
+        + main(args: String[])
+        - pruebaUnProblema(archivo: String)
+        - muestraSol(sol: List<Nodo>, busqueda: Busqueda, problema: Problema)
+    }
+    
+    class TesterProblema {
+        + main(args: String[])
+    }
+}
+
+package "Capa de Control" {
+    abstract class Busqueda<Estado, Accion> {
+        # prob: Problema<Estado,Accion>
+        # frontera: Frontera<Estado,Accion>
+        # explorados: Map<Estado,Nodo<Estado,Accion>>
+        
+        + busqueda(): List<Nodo<Estado,Accion>>
+        # inicia(): void
+        # expandir(actual: Nodo): List<Nodo>
+        # tratarRepetidos(hijos: List<Nodo>): void
+    }
+}
+
+package "Capa de Algoritmos" {
+    class BusquedaPrimeroAnchura<Estado, Accion> {
+        + BusquedaPrimeroAnchura(problema: Problema)
+    }
+    
+    class BusquedaPrimeroProf<Estado, Accion> {
+        + BusquedaPrimeroProf(problema: Problema)
+    }
+    
+    class BusquedaPrimeroMejor<Estado, Accion> {
+        - h: Heuristico<Estado>
+        - comp: Comparator<Nodo<Estado,Accion>>
+        
+        + BusquedaPrimeroMejor(problema: Problema)
+        + BusquedaPrimeroMejor(problema: Problema, criterio: Criterio, h: Heuristico)
+        # tratarRepetidos(hijos: List<Nodo>): void
+        - noRepeOPeorEnFrontera(hijo: Nodo): boolean
+    }
+}
+
+package "Capa de Estructuras de Datos" {
+    abstract class Frontera<Estado, Accion> {
+        # frontera: Queue<Nodo<Estado,Accion>>
+        + {abstract} primero(): Nodo<Estado,Accion>
+        + {abstract} aniade(n: Nodo<Estado,Accion>): void
+        + contiene(n: Nodo<Estado,Accion>): boolean
+        + contieneNodo(n: Nodo<Estado,Accion>): Nodo<Estado,Accion>
+    }
+    
+    class FronteraFIFO<Estado, Accion> {
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+    
+    class FronteraLIFO<Estado, Accion> {
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+    
+    class FronteraPrioridad<Estado, Accion> {
+        + FronteraPrioridad(criterio: Criterio)
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+    
+    class Nodo<Estado, Accion> {
+        - estado: Estado
+        - padre: Nodo<Estado,Accion>
+        - accion: Accion
+        - g: double
+        - h: double
+        
+        + getF(): double
+        + caminoDesdeInicio(): List<Nodo<Estado,Accion>>
+    }
+}
+
+package "Capa de Dominio" {
+    abstract class Problema<Estado, Accion> {
+        + getInicio(): Estado
+        + {abstract} acciones(e: Estado): List<Accion>
+        + {abstract} aplicable(e: Estado, a: Accion): boolean
+        + {abstract} resul(e: Estado, a: Accion): Estado
+        + {abstract} esMeta(e: Estado): boolean
+        + {abstract} coste(e1: Estado, a: Accion, e2: Estado): double
+    }
+}
+
+package "Capa de Heurísticas" {
+    class Heuristico<Estado> {
+        + calculaH(e: Estado): double
+    }
+    
+    enum Criterio {
+        g, h, f
+    }
+    
+    class ComparaNodos<Estado, Accion> {
+        - crit: Criterio
+        + compare(n1: Nodo, n2: Nodo): int
+    }
+}
+
+package "Aplicación Específica: GPF" {
+    class ProblemaGPF {
+        - grid: int[][]
+        - inicio: EstadoGPF
+        - meta: EstadoGPF
+        
+        + acciones(e: EstadoGPF): List<AccionGPF>
+        + aplicable(e: EstadoGPF, a: AccionGPF): boolean
+        + resul(e: EstadoGPF, a: AccionGPF): EstadoGPF
+        + esMeta(e: EstadoGPF): boolean
+        + coste(e1: EstadoGPF, a: AccionGPF, e2: EstadoGPF): double
+        + muestraProblema(): void
+    }
+    
+    class EstadoGPF {
+        - x: int
+        - y: int
+        
+        + getX(): int
+        + getY(): int
+        + equals(obj: Object): boolean
+        + hashCode(): int
+    }
+    
+    class AccionGPF {
+        - direccion: Direccion
+        
+        + getDeltaX(): int
+        + getDeltaY(): int
+        + toString(): String
+    }
+    
+    enum Direccion {
+        ARRIBA, ABAJO, IZQUIERDA, DERECHA
+    }
+    
+    class HeuristicoGPFManhattan {
+        - problema: ProblemaGPF
+        + calculaH(estado: EstadoGPF): double
+    }
+}
+
+' Relaciones entre capas
+Tester ..> BusquedaPrimeroAnchura : usa
+Tester ..> BusquedaPrimeroProf : usa  
+Tester ..> BusquedaPrimeroMejor : usa
+Tester ..> ProblemaGPF : usa
+Tester ..> HeuristicoGPFManhattan : usa
+
+BusquedaPrimeroAnchura --|> Busqueda : extiende
+BusquedaPrimeroProf --|> Busqueda : extiende
+BusquedaPrimeroMejor --|> Busqueda : extiende
+
+Busqueda *-- Problema : contiene
+Busqueda *-- Frontera : contiene
+
+BusquedaPrimeroAnchura *-- FronteraFIFO : usa
+BusquedaPrimeroProf *-- FronteraLIFO : usa
+BusquedaPrimeroMejor *-- FronteraPrioridad : usa
+BusquedaPrimeroMejor *-- Heuristico : usa
+BusquedaPrimeroMejor *-- ComparaNodos : usa
+
+FronteraFIFO --|> Frontera : implementa
+FronteraLIFO --|> Frontera : implementa  
+FronteraPrioridad --|> Frontera : implementa
+
+Frontera ..> Nodo : maneja
+ComparaNodos ..> Nodo : compara
+ComparaNodos *-- Criterio : usa
+
+ProblemaGPF --|> Problema : implementa
+ProblemaGPF *-- EstadoGPF : maneja
+ProblemaGPF ..> AccionGPF : usa
+HeuristicoGPFManhattan --|> Heuristico : extiende
+HeuristicoGPFManhattan *-- ProblemaGPF : usa
+
+AccionGPF *-- Direccion : contiene
+
+note top of Busqueda : Patrón Template Method:\nDefine el algoritmo general,\nlas subclases personalizan\npartes específicas
+
+note right of Frontera : Patrón Strategy:\nDiferentes estrategias\nde manejo de frontera\n(FIFO, LIFO, Prioridad)
+
+note bottom of BusquedaPrimeroMejor : Unifica tres algoritmos:\n- Coste Uniforme (g)\n- Greedy (h) \n- A* (f)
+
+note left of ProblemaGPF : Implementación específica\npara Grid Path Finding\ncon 4 direcciones de\nmovimiento
+
+@enduml

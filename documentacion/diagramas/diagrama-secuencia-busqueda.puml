@@ -1,0 +1,163 @@
+@startuml diagrama-secuencia-busqueda
+
+!define TITLE Diagrama de Secuencia - Proceso de Búsqueda
+
+title TITLE
+
+actor Usuario
+participant Tester
+participant "b:BusquedaPrimeroMejor" as Busqueda
+participant "p:ProblemaGPF" as Problema
+participant "f:FronteraPrioridad" as Frontera
+participant "h:HeuristicoGPFManhattan" as Heuristico
+participant "nodo:Nodo" as Nodo
+
+Usuario -> Tester: ejecutar programa
+activate Tester
+
+Tester -> Problema: new ProblemaGPF(archivo)
+activate Problema
+Problema -> Problema: leerDeFichero()
+Problema --> Tester: problema creado
+deactivate Problema
+
+Tester -> Heuristico: new HeuristicoGPFManhattan(p)
+activate Heuristico
+Heuristico --> Tester: heurístico creado
+deactivate Heuristico
+
+Tester -> Busqueda: new BusquedaPrimeroMejor(p, Criterio.f, h)
+activate Busqueda
+Busqueda -> Frontera: new FronteraPrioridad(Criterio.f)
+activate Frontera
+Frontera --> Busqueda: frontera creada
+deactivate Frontera
+Busqueda --> Tester: búsqueda creada
+deactivate Busqueda
+
+Tester -> Busqueda: busqueda()
+activate Busqueda
+
+Busqueda -> Busqueda: inicia()
+activate Busqueda
+Busqueda -> Problema: getInicio()
+Problema --> Busqueda: estado inicial
+Busqueda -> Nodo: new Nodo(inicio)
+activate Nodo
+Nodo --> Busqueda: nodo inicial
+deactivate Nodo
+Busqueda -> Heuristico: calculaH(estado)
+activate Heuristico
+Heuristico --> Busqueda: valor h
+deactivate Heuristico
+Busqueda -> Nodo: setH(valor)
+Busqueda -> Frontera: aniade(nodo inicial)
+activate Frontera
+Frontera --> Busqueda: añadido
+deactivate Frontera
+deactivate Busqueda
+
+loop mientras frontera no vacía y no encontrada meta
+    Busqueda -> Frontera: primero()
+    activate Frontera
+    Frontera --> Busqueda: nodo actual
+    deactivate Frontera
+    
+    Busqueda -> Problema: esMeta(estado actual)
+    activate Problema
+    Problema --> Busqueda: es/no es meta
+    deactivate Problema
+    
+    alt no es meta
+        Busqueda -> Busqueda: expandir(actual)
+        activate Busqueda
+        Busqueda -> Problema: acciones(estado actual)
+        activate Problema
+        Problema --> Busqueda: lista acciones
+        deactivate Problema
+        
+        loop por cada acción
+            Busqueda -> Problema: resul(estado, accion)
+            activate Problema
+            Problema --> Busqueda: nuevo estado
+            deactivate Problema
+            
+            Busqueda -> Problema: coste(e1, accion, e2)
+            activate Problema
+            Problema --> Busqueda: coste
+            deactivate Problema
+            
+            Busqueda -> Nodo: new Nodo(estado, padre, accion, coste)
+            activate Nodo
+            Nodo --> Busqueda: hijo
+            deactivate Nodo
+            
+            Busqueda -> Heuristico: calculaH(nuevo estado)
+            activate Heuristico
+            Heuristico --> Busqueda: valor h
+            deactivate Heuristico
+            
+            Busqueda -> Nodo: setH(valor)
+        end
+        deactivate Busqueda
+        
+        Busqueda -> Busqueda: tratarRepetidos(hijos)
+        activate Busqueda
+        
+        loop por cada hijo
+            alt hijo no en explorados
+                Busqueda -> Busqueda: noRepeOPeorEnFrontera(hijo)
+                activate Busqueda
+                Busqueda -> Frontera: contieneNodo(hijo)
+                activate Frontera
+                Frontera --> Busqueda: nodo existente o null
+                deactivate Frontera
+                
+                alt nodo no existe en frontera
+                    Busqueda --> Busqueda: true
+                else nodo existe y hijo es mejor
+                    Busqueda -> Frontera: remove(nodo existente)
+                    activate Frontera
+                    Frontera --> Busqueda: eliminado
+                    deactivate Frontera
+                    Busqueda --> Busqueda: true
+                else hijo no es mejor
+                    Busqueda --> Busqueda: false
+                end
+                deactivate Busqueda
+                
+                alt añadir hijo
+                    Busqueda -> Frontera: aniade(hijo)
+                    activate Frontera
+                    Frontera --> Busqueda: añadido
+                    deactivate Frontera
+                end
+            end
+        end
+        deactivate Busqueda
+    end
+end
+
+Busqueda -> Busqueda: solucion(meta)
+activate Busqueda
+Busqueda -> Nodo: caminoDesdeInicio()
+activate Nodo
+Nodo --> Busqueda: camino solución
+deactivate Nodo
+deactivate Busqueda
+
+Busqueda --> Tester: lista nodos solución
+deactivate Busqueda
+
+Tester -> Tester: muestraSol(sol, busqueda, problema)
+Tester --> Usuario: resultados mostrados
+
+deactivate Tester
+
+note right of Busqueda: El algoritmo A* utiliza f(n) = g(n) + h(n)\npara ordenar la frontera de prioridad
+
+note right of Heuristico: La distancia Manhattan es admisible\ny consistente para grid pathfinding
+
+note right of Frontera: La frontera de prioridad mantiene\nlos nodos ordenados por f(n)
+
+@enduml

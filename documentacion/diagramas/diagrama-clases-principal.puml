@@ -1,0 +1,217 @@
+@startuml diagrama-clases-principal
+
+!define TITLE Sistema de Búsqueda en Grafos - Diagrama de Clases Principal
+
+title TITLE
+
+package "Framework de Búsqueda" {
+    abstract class Busqueda<Estado, Accion> {
+        # prob: Problema<Estado,Accion>
+        # frontera: Frontera<Estado,Accion>
+        # explorados: Map<Estado,Nodo<Estado,Accion>>
+        - meta: Nodo<Estado,Accion>
+        
+        + Busqueda(p: Problema<Estado,Accion>)
+        + busqueda(): List<Nodo<Estado,Accion>>
+        + nodosExplorados(): int
+        + nodosEnFrontera(): int
+        + costeSolucion(): double
+        
+        # inicia(): void
+        # expandir(actual: Nodo<Estado,Accion>): List<Nodo<Estado,Accion>>
+        # tratarRepetidos(hijos: List<Nodo<Estado,Accion>>): void
+    }
+    
+    abstract class Problema<Estado, Accion> {
+        + getInicio(): Estado
+        + acciones(e: Estado): List<Accion>
+        + aplicable(e: Estado, a: Accion): boolean
+        + resul(e: Estado, a: Accion): Estado
+        + esMeta(e: Estado): boolean
+        + coste(e1: Estado, a: Accion, e2: Estado): double
+        + sucesores(e: Estado): List<Estado>
+    }
+    
+    class Nodo<Estado, Accion> {
+        - estado: Estado
+        - padre: Nodo<Estado,Accion>
+        - accion: Accion
+        - g: double
+        - h: double
+        
+        + Nodo(estado: Estado)
+        + Nodo(estado: Estado, padre: Nodo, accion: Accion, coste: double)
+        + getEstado(): Estado
+        + getPadre(): Nodo<Estado,Accion>
+        + getAccion(): Accion
+        + getG(): double
+        + getH(): double
+        + setH(valorH: double): void
+        + getF(): double
+        + esRaiz(): boolean
+        + caminoDesdeInicio(): List<Nodo<Estado,Accion>>
+        + equals(obj: Object): boolean
+        + hashCode(): int
+    }
+    
+    abstract class Frontera<Estado, Accion> {
+        # frontera: Queue<Nodo<Estado,Accion>>
+        
+        + {abstract} primero(): Nodo<Estado,Accion>
+        + {abstract} aniade(n: Nodo<Estado,Accion>): void
+        + contiene(n: Nodo<Estado,Accion>): boolean
+        + contieneNodo(n: Nodo<Estado,Accion>): Nodo<Estado,Accion>
+        + clear(): void
+        + esVacia(): boolean
+        + tamanio(): int
+    }
+    
+    class Heuristico<Estado> {
+        + calculaH(e: Estado): double
+    }
+    
+    enum Criterio {
+        g, h, f
+    }
+    
+    class ComparaNodos<Estado, Accion> {
+        - crit: Criterio
+        + ComparaNodos()
+        + ComparaNodos(c: Criterio)
+        + compare(n1: Nodo, n2: Nodo): int
+    }
+}
+
+package "Implementaciones de Frontera" {
+    class FronteraFIFO<Estado, Accion> {
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+    
+    class FronteraLIFO<Estado, Accion> {
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+    
+    class FronteraPrioridad<Estado, Accion> {
+        + FronteraPrioridad()
+        + FronteraPrioridad(crit: Criterio)
+        + FronteraPrioridad(comp: ComparaNodos)
+        + primero(): Nodo<Estado,Accion>
+        + aniade(n: Nodo<Estado,Accion>): void
+    }
+}
+
+package "Implementaciones de Búsqueda" {
+    class BusquedaPrimeroAnchura<Estado, Accion> {
+        + BusquedaPrimeroAnchura(p: Problema)
+    }
+    
+    class BusquedaPrimeroProf<Estado, Accion> {
+        + BusquedaPrimeroProf(p: Problema)
+    }
+    
+    class BusquedaPrimeroMejor<Estado, Accion> {
+        - h: Heuristico<Estado>
+        - comp: Comparator<Nodo<Estado,Accion>>
+        
+        + BusquedaPrimeroMejor(p: Problema)
+        + BusquedaPrimeroMejor(p: Problema, c: Criterio, h: Heuristico)
+        # inicia(): void
+        # expandir(actual: Nodo): List<Nodo>
+        # tratarRepetidos(hijos: List<Nodo>): void
+        - noRepeOPeorEnFrontera(hijo: Nodo): boolean
+    }
+}
+
+package "Problema GPF (Grid Path Finding)" {
+    class ProblemaGPF {
+        - grid: int[][]
+        - gridNFilas: int
+        - gridNCols: int
+        - inicio: EstadoGPF
+        - meta: EstadoGPF
+        
+        + ProblemaGPF(fichProblema: String)
+        + ProblemaGPF(g: int[][], iniX: int, iniY: int, metaX: int, metaY: int)
+        + acciones(eactual: EstadoGPF): List<AccionGPF>
+        + aplicable(e: EstadoGPF, a: AccionGPF): boolean
+        + resul(e: EstadoGPF, a: AccionGPF): EstadoGPF
+        + esMeta(e: EstadoGPF): boolean
+        + coste(e1: EstadoGPF, a: AccionGPF, e2: EstadoGPF): double
+        + muestraProblema(): void
+    }
+    
+    class EstadoGPF {
+        - x: int
+        - y: int
+        
+        + EstadoGPF(x: int, y: int)
+        + getX(): int
+        + getY(): int
+        + equals(obj: Object): boolean
+        + hashCode(): int
+        + toString(): String
+    }
+    
+    class AccionGPF {
+        - direccion: Direccion
+        
+        + AccionGPF(direccion: Direccion)
+        + getDireccion(): Direccion
+        + getDeltaX(): int
+        + getDeltaY(): int
+        + toString(): String
+        + equals(obj: Object): boolean
+        + hashCode(): int
+    }
+    
+    enum Direccion {
+        ARRIBA, ABAJO, IZQUIERDA, DERECHA
+    }
+    
+    class HeuristicoGPFManhattan {
+        - problema: ProblemaGPF
+        
+        + HeuristicoGPFManhattan(problema: ProblemaGPF)
+        + calculaH(estado: EstadoGPF): double
+    }
+}
+
+' Relaciones de herencia
+Busqueda <|-- BusquedaPrimeroAnchura
+Busqueda <|-- BusquedaPrimeroProf  
+Busqueda <|-- BusquedaPrimeroMejor
+Frontera <|-- FronteraFIFO
+Frontera <|-- FronteraLIFO
+Frontera <|-- FronteraPrioridad
+Problema <|-- ProblemaGPF
+Heuristico <|-- HeuristicoGPFManhattan
+
+' Relaciones de composición/agregación
+Busqueda *-- Problema
+Busqueda *-- Frontera
+BusquedaPrimeroAnchura *-- FronteraFIFO
+BusquedaPrimeroProf *-- FronteraLIFO
+BusquedaPrimeroMejor *-- FronteraPrioridad
+BusquedaPrimeroMejor *-- Heuristico
+BusquedaPrimeroMejor *-- ComparaNodos
+FronteraPrioridad *-- ComparaNodos
+ComparaNodos *-- Criterio
+AccionGPF *-- Direccion
+ProblemaGPF *-- EstadoGPF
+HeuristicoGPFManhattan *-- ProblemaGPF
+
+' Relaciones de uso
+Busqueda ..> Nodo : usa
+Frontera ..> Nodo : maneja
+Problema ..> EstadoGPF : manipula
+Problema ..> AccionGPF : manipula
+
+note top of BusquedaPrimeroMejor : Implementa:\n- Coste Uniforme (g)\n- Greedy (h)\n- A* (f)
+
+note right of AccionGPF : Cuatro direcciones:\nArriba, Abajo,\nIzquierda, Derecha
+
+note bottom of HeuristicoGPFManhattan : Distancia Manhattan:\n|x1-x2| + |y1-y2|
+
+@enduml
