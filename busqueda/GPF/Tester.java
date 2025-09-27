@@ -23,13 +23,66 @@ public class Tester {
 
 		// OPCION 1: Para probar todas las busquedas con un problema concreto
 		// pruebaUnProblema("p8x8.txt");
-		pruebaUnProblema("p6x6.txt");
+		// pruebaUnProblema("p6x6.txt");
 		// pruebaUnProblema("prob10x15-8.txt");
 
 		// OPCION 2: Probar todas las busquedas con un conjunto de problemas y recopilar
 		// resultados relevantes
-		// TODO esto hay que hacerlo (la alternativa es ir lanzando uno a uno y hacer
-		// corta/pega muchas veces)
+		String[] problemas = {
+				"p5x5.txt",
+				"p6x6.txt",
+				"p8x8.txt",
+				"p10x10.txt",
+				"prob10x10-0.txt",
+				"prob10x10-1.txt",
+				"prob10x10-2.txt",
+				"prob10x10-3.txt",
+				"prob10x10-4.txt",
+				"prob10x10-5.txt",
+				"prob10x10-6.txt",
+				"prob10x10-7.txt",
+				"prob10x10-8.txt",
+				"prob10x10-9.txt",
+				"prob10x15-0.txt",
+				"prob10x15-1.txt",
+				"prob10x15-2.txt",
+				"prob10x15-3.txt",
+				"prob10x15-4.txt",
+				"prob10x15-5.txt",
+				"prob10x15-6.txt",
+				"prob10x15-7.txt",
+				"prob10x15-8.txt",
+				"prob10x15-9.txt",
+				"prob15x15-0.txt",
+				"prob15x15-1.txt",
+				"prob15x15-2.txt",
+				"prob15x15-3.txt",
+				"prob15x15-4.txt",
+				"prob15x15-5.txt",
+				"prob15x15-6.txt",
+				"prob15x15-7.txt",
+				"prob15x15-8.txt",
+				"prob15x15-9.txt"
+		};
+
+		System.out.println("=".repeat(80));
+		System.out.println("PROBANDO TODOS LOS PROBLEMAS DISPONIBLES");
+		System.out.println("=".repeat(80));
+
+		for (String problema : problemas) {
+			System.out.println("\n" + "=".repeat(80));
+			System.out.println("PROBLEMA: " + problema);
+			System.out.println("=".repeat(80));
+			try {
+				pruebaUnProblema(problema);
+			} catch (Exception e) {
+				System.out.println("Error procesando " + problema + ": " + e.getMessage());
+			}
+		}
+
+		System.out.println("\n" + "=".repeat(80));
+		System.out.println("FIN DE TODAS LAS PRUEBAS");
+		System.out.println("=".repeat(80));
 	}
 
 	/**
