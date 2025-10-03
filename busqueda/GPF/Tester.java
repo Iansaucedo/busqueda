@@ -5,17 +5,15 @@ package busqueda.GPF;
  * @author Ines
  * @version 2021.10.*
  */
-import java.util.List;
-
 import busqueda.Busqueda;
 import busqueda.BusquedaPrimeroAnchura;
 import busqueda.BusquedaPrimeroMejor;
 import busqueda.BusquedaPrimeroProf;
 import busqueda.Criterio;
 import busqueda.Heuristico;
-//import busqueda.HeuristicoGPFManhattan;
 import busqueda.Nodo;
 import busqueda.Problema;
+import java.util.List;
 
 public class Tester {
 
@@ -126,12 +124,11 @@ public class Tester {
 		muestraSol(solCU, bCU, p);
 
 		// BUSQUEDA PRIMERO EL MEJOR VORAZ CON HEURISTICO TRIVIAL
-		// System.out.println("---------------------------");
-		// System.out.println("1o MEJOR VORAZ CON H0");
-		// Busqueda<EstadoGPF,AccionGPF> bGBF0 = new
-		// BusquedaPrimeroMejor<EstadoGPF,AccionGPF>( p, Criterio.h, h0 );
-		// List<Nodo<EstadoGPF,AccionGPF>> solGBF0 = bGBF0.busqueda();
-		// muestraSol( solGBF0, bGBF0, p );
+		System.out.println("---------------------------");
+		System.out.println("1o MEJOR VORAZ CON H0");
+		Busqueda<EstadoGPF, AccionGPF> bGBF0 = new BusquedaPrimeroMejor<EstadoGPF, AccionGPF>(p, Criterio.h, h0);
+		List<Nodo<EstadoGPF, AccionGPF>> solGBF0 = bGBF0.busqueda();
+		muestraSol(solGBF0, bGBF0, p);
 		//
 		// BUSQUEDA PRIMERO EL MEJOR VORAZ CON HEURISTICO MANHATTAN
 		System.out.println("---------------------------");
@@ -141,13 +138,12 @@ public class Tester {
 		muestraSol(solGBFM, bGBFM, p);
 
 		// BUSQUEDA A* CON HEURISTICO TRIVIAL (AUNQUE EN REALIDAD YA LA HEMOS HECHO)
-		// System.out.println("---------------------------");
-		// System.out.println("A* CON H0. Deberia encontrar solucion optima");
-		// Busqueda<EstadoGPF,AccionGPF> bAStar00 = new
-		// BusquedaPrimeroMejor<EstadoGPF,AccionGPF>( p, Criterio.f, h0 );
-		// List<Nodo<EstadoGPF,AccionGPF>> solAStar00 = bAStar00.busqueda();
-		// muestraSol( solAStar00, bAStar00, p );
-		//
+		System.out.println("---------------------------");
+		System.out.println("A* CON H0. Deberia encontrar solucion optima");
+		Busqueda<EstadoGPF, AccionGPF> bAStar00 = new BusquedaPrimeroMejor<EstadoGPF, AccionGPF>(p, Criterio.f, h0);
+		List<Nodo<EstadoGPF, AccionGPF>> solAStar00 = bAStar00.busqueda();
+		muestraSol(solAStar00, bAStar00, p);
+
 		// BUSQUEDA A* CON HEURISTICO MANHATTAN
 		System.out.println("---------------------------");
 		System.out.println("A* CON MANHATTAN. Deberia encontrar solucion optima");
